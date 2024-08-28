@@ -1,38 +1,145 @@
-.App {
-  text-align: center;
+@font-face {
+  font-family: "Young Serif";
+  src: url(assets/fonts/young-serif/YoungSerif-Regular.ttf);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@font-face {
+  font-family: "Outfit";
+  src: url(assets/fonts/outfit/Outfit-VariableFont_wght.ttf);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+:root {
+  --clr-white: #FFFFFF;
+  --clr-darkslate: #1E201E;
+  --clr-dimgray: #3C3D37;
+  --clr-olive: #697565;
+  --clr-beige-200: #ECDFCC;
+  --clr-beige-50: #EAE4DD;
+
+  --clr-green: #21cd9b;
+  --clr-red: #bd6250;
+
+  --ff-main: 'Outfit', sans-serif;
+  --ff-headings: 'Young Serif', serif;
+
+  --fs-label: .75rem;
+  --fs-main: 1rem;
+  --fs-headings: 2rem;
+  --fw-400:400;
+  --fw-600:600;
+  --fw-700:700;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+*,
+*::before,
+*::after{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4 {
+  line-height: 1.2;
+  font-family: var(--ff-headings);
+  font-size: var(--fs-headings);
+  font-weight: var(--fw-400);
+  color:var(--clr-beige-50);
+  margin-bottom: 1.25rem;
+}
+
+.wrapper {
+  display: flex;
+}
+
+.input-wrapper {
+  background-color:var(--clr-dimgray);
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  width: 15%;
+  padding: 2rem 1rem;
+}
+
+.asset-stat-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.asset-stat-form input {
+  background-color: var(--clr-darkslate);
+  color: var(--clr-beige-200);
+  border-radius: .5rem;
+  height: 2rem;
+  margin: .25rem;
+  width: 100%;
+}
+
+hr {
+  margin: 1rem;
+  color: var(--clr-beige-200);
+}
+
+.asset-stat-form input {
+  background-color: var(--clr-darkslate);
+  color: var(--clr-beige-200);
+  border-radius: .5rem;
+  height: 2rem;
+  margin: .25rem;
+  width: 100%;
+}
+
+.asset-stat-form .input-error-border {
+  background-color: rgba(255, 0, 0, 0.075); /* Light red background */
+}
+
+.input-error {
+  display: flex;
   align-items: center;
+  gap: 0.25rem; /* Adjust the gap between the icon and the message */
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  font-weight: 600; /* Equivalent to font-semibold */
+  color: #ef4444; /* Red color (similar to Tailwind's red-500) */
+  background-color: #fee2e2; /* Light red background (similar to Tailwind's red-100) */
+  border-radius: 0.375rem; /* Rounded corners */
+  font-size: var(--fs-label);
+}
+
+.asset-stat-form label {
+  margin-top: 1rem;
+  font-size: var(--fs-label);
+}
+
+.info-wrapper {
+  width:100%;
+  margin: 4rem;
+}
+
+.call-put-values{
+  display: flex;
+}
+
+.call-value, .put-value{
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center;
+  margin: 1rem;
+  height: 6rem;
+  color: var(--clr-darkslate);
+  border-radius: 1rem;
 }
 
-.App-link {
-  color: #61dafb;
+.call-value strong, .put-value strong {
+  font-size: var(--fs-headings);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.call-value{
+  background-color: var(--clr-green);
+}
+
+.put-value{
+  background-color: var(--clr-red);
 }
