@@ -2,17 +2,6 @@
 
 This project implements the Black-Scholes pricing model for financial options, providing real-time calculation of call and put option prices based on user inputs. Additionally, the project includes a heatmap visualization for the Profit and Loss (PNL) of options, based on dynamic pricing.
 
-## Table of Contents
-
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [Project Structure](#project-structure)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Customization](#customization)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## Features
 
 - **Black-Scholes Option Pricing**: Calculates real-time call and put option prices based on the Black-Scholes model.
