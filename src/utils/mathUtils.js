@@ -10,8 +10,8 @@ export function blackscholes(asset_price, strike_price, expiry_time, interest_ra
     const d1 = (Math.log(S / K) + (r + Math.pow(sigma, 2) / 2) * T) / (sigma * Math.sqrt(T));
     const d2 = d1 - sigma * Math.sqrt(T);
 
-    const call = S * N(d1) - K * Math.exp(-r * T) * N(d2);
-    const put = K * Math.exp(-r * T) * N(-d2) - S * N(-d1);
+    const call = Math.max(S * N(d1) - K * Math.exp(-r * T) * N(d2), 0);
+    const put = Math.max(K * Math.exp(-r * T) * N(-d2) - S * N(-d1), 0);
 
     return {
         call: call.toFixed(2), 

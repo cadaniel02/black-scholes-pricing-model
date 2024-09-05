@@ -1,0 +1,138 @@
+import { useState, useEffect, useCallback } from 'react';
+import {FormProvider, useForm, useFormContext} from 'react-hook-form';
+import { Input } from './Input';
+import { debounce, noop } from 'lodash'
+import { blackscholes } from '../utils/mathUtils';
+
+export const HeatMapForm = ({submit}) => {
+
+    const { watch, trigger, handleSubmit, getValues, setError, clearErrors } = useFormContext();
+
+    const volatilityMin = watch('volatility_min');
+    const volatilityMax = watch('volatility_max');
+    const spotPriceMin = watch('spot_price_min');
+    const spotPriceMax = watch('spot_price_max');
+
+    const onSubmit = handleSubmit(data => {
+
+        const valuesFromFirstForm = getValues(['strike_price', 'expiry_time', 'interest_rate']);
+        const valuesFromFirstFormObject = {
+            strike_price: valuesFromFirstForm[0],
+            expiry_time: valuesFromFirstForm[1],
+            interest_rate: valuesFromFirstForm[2]
+        };
+        if (!valuesFromFirstFormObject.strike_price || !valuesFromFirstFormObject.expiry_time || !valuesFromFirstFormObject.interest_rate) {
+            setError('form', { type: 'manual', message: 'First form values are required!' });
+            return;
+        }
+        submit({...data, ...valuesFromFirstFormObject})
+    })
+
+    useEffect(() => {
+        trigger(['volatility_min', 'volatility_max']);
+    }, [volatilityMax, volatilityMin, trigger]);
+
+    useEffect(() => {
+        trigger(['spot_price_min', 'spot_price_max']);
+    }, [spotPriceMax, spotPriceMin, trigger]);
+
+    return (
+        <form class="heatmap-form" onSubmit={handleSubmit(onSubmit)}>
+            <div class="input-range">
+                <Input
+                    label="Minimum Spot Price"
+                    id="spot_price_min"
+                    type="number"
+                    step="any"
+                    validation={{
+                        required: {
+                            value: true,
+                            message: 'required',
+                        },
+                        min: {
+                            value: 0,
+                            message: 'value must be positive'
+                        },
+                        max: {
+                            value: spotPriceMax || Infinity,
+                            message: 'value must be lower than the maximum'
+                        }
+                    }}
+                />
+                <Input
+                    label="Maximum Spot Price"
+                    id="spot_price_max"
+                    type="number"
+                    step="any"
+                    validation={{
+                        required: {
+                            value: true,
+                            message: 'required',
+                        },
+                        min: {
+                            value: spotPriceMin && 0,
+                            message: 'value must be higher than the minimum'
+                        }
+                    }}
+                />
+            </div>
+            <div class="input-range">
+                <Input
+                    label="Minimum Volatility"
+                    id="volatility_min"
+                    type="number"
+                    step="any"
+                    validation={{
+                        required: {
+                            value: true,
+                            message: 'required',
+                        },
+                        min: {
+                            value: 0,
+                            message: 'value must be positive'
+                        },
+                        max: {
+                            value: volatilityMax || Infinity,
+                            message: 'value must be lower than the maximum'
+                        }
+                    }}
+                />
+                <Input
+                    label="Maximum Volatility"
+                    id="volatility_max"
+                    type="number"
+                    step="any"
+                    validation={{
+                        required: {
+                            value: true,
+                            message: 'required',
+                        },
+                        min: {
+                            value: volatilityMin && 0,
+                            message: 'value must be higher than the minimum'
+                        }
+                    }}
+                />
+            </div>
+            <Input
+                label="Option Purchase Price"
+                id="purchase_price"
+                type="number"
+                step="any"
+                validation={{
+                    required: {
+                        value: true,
+                        message: 'required',
+                    },
+                    min: {
+                        value: 0,
+                        message: 'value must be positive'
+                    }
+                }}
+            />
+            <button type="submit">
+                {'Submit'}
+            </button>
+        </form>
+    )
+}

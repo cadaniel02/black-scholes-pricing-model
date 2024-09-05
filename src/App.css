@@ -49,6 +49,7 @@ h1, h2, h3, h4 {
 
 .wrapper {
   display: flex;
+  flex-basis: auto;
 }
 
 .input-wrapper {
@@ -56,23 +57,20 @@ h1, h2, h3, h4 {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  width: 15%;
+  min-width: 10rem;
+  max-width: 17.5rem;
   padding: 2rem 1rem;
 }
 
-.asset-stat-form {
+.asset-stat-form, .heatmap-form {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.asset-stat-form input {
-  background-color: var(--clr-darkslate);
-  color: var(--clr-beige-200);
-  border-radius: .5rem;
-  height: 2rem;
-  margin: .25rem;
-  width: 100%;
+.input-range {
+  display: flex;
+  flex-grow: 0;
 }
 
 hr {
@@ -80,7 +78,7 @@ hr {
   color: var(--clr-beige-200);
 }
 
-.asset-stat-form input {
+input {
   background-color: var(--clr-darkslate);
   color: var(--clr-beige-200);
   border-radius: .5rem;
@@ -89,7 +87,7 @@ hr {
   width: 100%;
 }
 
-.asset-stat-form .input-error-border {
+.input-error-border {
   background-color: rgba(255, 0, 0, 0.075); /* Light red background */
 }
 
@@ -106,7 +104,7 @@ hr {
   font-size: var(--fs-label);
 }
 
-.asset-stat-form label {
+.asset-stat-form label, .heatmap-form label {
   margin-top: 1rem;
   font-size: var(--fs-label);
 }
@@ -118,6 +116,7 @@ hr {
 
 .call-put-values{
   display: flex;
+  margin-bottom: 2rem;
 }
 
 .call-value, .put-value{
@@ -142,4 +141,34 @@ hr {
 
 .put-value{
   background-color: var(--clr-red);
+}
+
+.heatmaps{
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  margin-left:2.5%
+}
+
+.heatmaps .call-heatmap, .put-heatmap{
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem;
+  border-radius: 1rem;
+}
+
+.heatmaps strong {
+  margin-right: 12.5%;
+}
+
+.heatmap-image {
+  width: 100%;
+  max-width: 100%;
 }

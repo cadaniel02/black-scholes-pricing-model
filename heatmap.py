@@ -1,28 +1,33 @@
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import norm
 from flask import Flask, request, send_file
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 from io import BytesIO
+import zipfile
+from flask_cors import CORS
 
+matplotlib.use('Agg')  # Use 'Agg' backend for non-GUI rendering
 app = Flask(__name__)
+CORS(app)
 
-@app.route('/generate-heatmap', methods=['POST'])
+@app.route('/generate-heatmaps', methods=['POST'])
 def generate_heatmap():
+
+    print(request.json)
     
     data = request.json
-    maxS = np.array(data['spot-price-max'])
-    minS = np.array(data['spot-price-min'])
-    maxV = np.array(data['volatility-max'])
-    minV = np.array(data['volatility-min'])
-    purchase_price = float(data['purchase-price'])
+    maxS = np.array(data['spot_price_max'])
+    minS = np.array(data['spot_price_min'])
+    maxV = np.array(data['volatility_max'])
+    minV = np.array(data['volatility_min'])
+    purchase_price = float(data['purchase_price'])
 
-    K = np.array(data['strike-price'])
-    T = np.array(data['expiry-time'])
-    r = np.array(data['interest-rate'])
+    K = np.array(data['strike_price'])
+    T = np.array(data['expiry_time'])
+    r = np.array(data['interest_rate'])
+
 
 
     # Define the Black-Scholes formula for a call option
@@ -49,28 +54,73 @@ def generate_heatmap():
     # Calculate option prices using Black-Scholes
     call_prices = black_scholes_call(S, K, T, r, sigma)
     put_prices = black_scholes_put(S, K, T, r, sigma)
-    
+
     # Calculate PNL based on the purchase price
-    call_pnl = max(call_prices - purchase_price, -purchase_price)
-    put_pnl = max(put_prices - purchase_price, - purchase_price)
-    
-    labels = np.array([[f'{"-" if call_pnl < 0 else ""}${abs(call_pnl):.2f}' for pnl_val in row] for row in pnl])
+    call_pnl = np.maximum(call_prices - purchase_price, -purchase_price)
+    put_pnl = np.maximum(put_prices - purchase_price, -purchase_price)
+    def custom_normalize(pnl, purchase_price):
+        # Linear mapping from [-purchase_price, 0] to [0, 0.5]
+        normalized_loss = np.clip((pnl + purchase_price) / (2 * purchase_price), 0, 0.5)
+        k = 1000
+        normalized_profit = np.clip((np.log1p(k * pnl / purchase_price) / np.log1p(k * 10)), 0.5, 1)
 
-    # Plot the PNL heatmap with profit in green and loss in red
+        # Combine loss and profit normalization
+        return np.where(pnl < 0, normalized_loss, normalized_profit)
+
+    call_pnl_normalized = custom_normalize(call_pnl, purchase_price)
+    put_pnl_normalized = custom_normalize(put_pnl, purchase_price)
+
+    images = []
+
+    labels = np.array([[f'{"-" if pnl_val < 0 else ""}${abs(pnl_val):.2f}' for pnl_val in row] for row in call_pnl])
     plt.figure(figsize=(10, 8))
-    sns.heatmap(call_pnl, xticklabels=np.round(spot_prices, 2), yticklabels=np.round(volatility, 2), 
-                cmap="RdYlGn", center=0, annot=labels, fmt="", cbar_kws={'label': 'PNL'})
-    plt.xlabel('Spot Price')
-    plt.ylabel('Volatility')
-    plt.show()
-    
-    labels = np.array([[f'{"-" if put_pnl < 0 else ""}${abs(put_pnl):.2f}' for pnl_val in row] for row in pnl])
+    ax = sns.heatmap(call_pnl_normalized, xticklabels=np.round(spot_prices, 2), yticklabels=np.round(volatility, 2),
+        cmap="RdYlGn", center=0.5, annot=labels, fmt="", cbar_kws={'label' : 'PNL'})
+    ax.set_xticklabels(ax.get_xticklabels(), color='white')
+    ax.set_yticklabels(ax.get_yticklabels(), color='white')
 
-    
+    ax.set_xlabel('Spot Price', color='white')
+    ax.set_ylabel('Volatility', color='white')
+    colorbar = ax.collections[0].colorbar
+    colorbar.set_label('PNL', color='white')
+    colorbar.ax.yaxis.label.set_color('white')
+    colorbar.ax.tick_params(labelcolor='white')
+
+    call_buf = BytesIO()
+    plt.savefig(call_buf, format='png', transparent=True)
+    call_buf.seek(0)
+    images.append(('call_heatmap.png', call_buf))
+    plt.close()
+
+    labels = np.array([[f'{"-" if pnl_val < 0 else ""}${abs(pnl_val):.2f}' for pnl_val in row] for row in put_pnl])
     plt.figure(figsize=(10, 8))
-    sns.heatmap(put_pnl, xticklabels=np.round(spot_prices, 2), yticklabels=np.round(volatility, 2), 
-                cmap="RdYlGn", center=0, annot=labels, fmt="", cbar_kws={'label': 'PNL'})
-    plt.xlabel('Spot Price')
-    plt.ylabel('Volatility')
-    plt.show()
+    ax = sns.heatmap(put_pnl_normalized, xticklabels=np.round(spot_prices, 2), yticklabels=np.round(volatility, 2),
+        cmap="RdYlGn", center=0.5, annot=labels, fmt="", cbar_kws={'label' : 'PNL'})
 
+    ax.set_xlabel('Spot Price', color='white')
+    ax.set_ylabel('Volatility', color='white')
+    ax.set_xticklabels(ax.get_xticklabels(), color='white')
+    ax.set_yticklabels(ax.get_yticklabels(), color='white')
+
+    colorbar = ax.collections[0].colorbar
+    colorbar.set_label('PNL', color='white')
+    colorbar.ax.yaxis.label.set_color('white')
+    colorbar.ax.tick_params(labelcolor='white')
+
+    call_buf = BytesIO()
+    plt.savefig(call_buf, format='png', transparent=True)
+    call_buf.seek(0)
+    images.append(('put_heatmap.png', call_buf))
+    plt.close()
+
+    zip_buf = BytesIO()
+    with zipfile.ZipFile(zip_buf, 'w') as zf:
+        for filename, buffer in images:
+            zf.writestr(filename, buffer.getvalue())
+    zip_buf.seek(0)
+
+    return send_file(zip_buf, mimetype='application/zip', as_attachment=True, download_name='heatmaps.zip')
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=8000)

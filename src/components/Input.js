@@ -4,7 +4,7 @@ import { MdError } from "react-icons/md"
 import { findInputError, isFormInvalid } from "../utils/errorUtils"
 import { useEffect } from "react"
 
-export const Input = ({label, type, id, validation, onChange}) => {
+export const Input = ({label, type, id, validation}) => {
     const {
         register,
         formState: { errors },
@@ -14,20 +14,14 @@ export const Input = ({label, type, id, validation, onChange}) => {
     const isRequiredError = inputError?.error?.type === "required";
     const isInvalid = isFormInvalid(inputError)
 
-    useEffect(() => {
-        console.log(errors)
-    },[errors])
-
     return(
         <div cl>
             <label htmlFor={id}>{label}</label>
-            <input className = {isRequiredError ? 'input-error-border' : ''}
+            <input
                 id={id}
                 type={type}
-                {...register(id,{
-                    ...validation,
-                    onChange: (e) => onChange(),
-                })}
+                step="any"
+                {...register(id, validation)}
             />
             <AnimatePresence mode="wait" initial={false}>
                 {!isRequiredError && isInvalid && (
