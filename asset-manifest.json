@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/black-scholes-pricing-model/static/css/main.e922ce4d.css",
+    "main.js": "/black-scholes-pricing-model/static/js/main.46a4d220.js",
+    "static/js/453.4f0ee435.chunk.js": "/black-scholes-pricing-model/static/js/453.4f0ee435.chunk.js",
+    "static/media/Outfit-VariableFont_wght.ttf": "/black-scholes-pricing-model/static/media/Outfit-VariableFont_wght.00c2ed1a3bf798b0da27.ttf",
+    "static/media/YoungSerif-Regular.ttf": "/black-scholes-pricing-model/static/media/YoungSerif-Regular.564996966d3552bf6282.ttf",
+    "index.html": "/black-scholes-pricing-model/index.html",
+    "main.e922ce4d.css.map": "/black-scholes-pricing-model/static/css/main.e922ce4d.css.map",
+    "main.46a4d220.js.map": "/black-scholes-pricing-model/static/js/main.46a4d220.js.map",
+    "453.4f0ee435.chunk.js.map": "/black-scholes-pricing-model/static/js/453.4f0ee435.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e922ce4d.css",
+    "static/js/main.46a4d220.js"
+  ]
+}
