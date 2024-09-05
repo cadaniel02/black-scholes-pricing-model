@@ -2,7 +2,6 @@ import { useFormContext } from "react-hook-form"
 import { AnimatePresence, motion } from "framer-motion"
 import { MdError } from "react-icons/md"
 import { findInputError, isFormInvalid } from "../utils/errorUtils"
-import { useEffect } from "react"
 
 export const Input = ({label, type, id, name, validation}) => {
     const {
