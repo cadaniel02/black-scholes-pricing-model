@@ -1,11 +1,9 @@
-import { Fragment, useState, useCallback, useEffect, useMemo } from "react"
+import { Fragment, useState, useCallback } from "react"
 import { BlackScholesForm } from "./components/BlockScholesForm";
 import { getHeatmaps } from "./utils/api/heatmap-api";
 
-import logo from './logo.svg';
 import './App.css';
 import { HeatMapForm } from "./components/HeatMapForm";
-import { noop } from "lodash";
 import { FormProvider, useForm } from "react-hook-form";
 function App() {
 
