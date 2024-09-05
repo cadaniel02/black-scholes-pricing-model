@@ -1,22 +1,39 @@
 import JSZip from 'jszip';
+import { API_URL } from '../../config'
 
+function base64ToBuffer(str){
+    str = window.atob(str); // creates a ASCII string
+    var buffer = new ArrayBuffer(str.length),
+        view = new Uint8Array(buffer);
+    for(var i = 0; i < str.length; i++){
+        view[i] = str.charCodeAt(i);
+    }
+    return buffer;
+}
+
+let jsonResponse
 export async function getHeatmaps(data) {
     try {
-        const response = await fetch('http://127.0.0.1:8000/generate-heatmaps', {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-
             },
             body: JSON.stringify(data)
         });
-        const blob = await response.blob();
+
+        jsonResponse = await response.json();
+        const base64Data = jsonResponse.body;
+
+        const buffer = base64ToBuffer(base64Data);
+
         const jszip = new JSZip();
         let zip;
         try {
-            zip = await jszip.loadAsync(blob);
+            zip = await jszip.loadAsync(buffer);
         } catch (error) {
-            console.error('Error processing ZIP file:', error);
+            console.error('Error generating heatmap', error);
+            return
         }
 
         const images = [];
@@ -28,6 +45,7 @@ export async function getHeatmaps(data) {
         }
         return images;  // Return the array of image blobs
     } catch (error) {
+        console.log("meow")
         console.error('Error fetching or processing heatmaps:', error);
     }
 }

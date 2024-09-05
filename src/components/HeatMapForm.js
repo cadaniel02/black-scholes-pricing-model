@@ -57,7 +57,7 @@ export const HeatMapForm = ({submit}) => {
                         },
                         max: {
                             value: spotPriceMax || Infinity,
-                            message: 'value must be lower than the maximum'
+                            message: 'input value lower than maximum'
                         }
                     }}
                 />
@@ -73,8 +73,8 @@ export const HeatMapForm = ({submit}) => {
                             message: 'required',
                         },
                         min: {
-                            value: spotPriceMin && 0,
-                            message: 'value must be higher than the minimum'
+                            value: Math.max(spotPriceMin || 0, 0),
+                            message: 'input positive value higher than minimum'
                         }
                     }}
                 />
@@ -97,7 +97,7 @@ export const HeatMapForm = ({submit}) => {
                         },
                         max: {
                             value: volatilityMax || Infinity,
-                            message: 'value must be lower than the maximum'
+                            message: 'input value lower than maximum'
                         }
                     }}
                 />
@@ -114,7 +114,11 @@ export const HeatMapForm = ({submit}) => {
                         },
                         min: {
                             value: Math.max(volatilityMin || 0, 0),
-                            message: 'value must be higher than the minimum'
+                            message: 'input positive value higher than minimum'
+                        },
+                        max: {
+                            value: 1,
+                            message: 'input at most 1'
                         }
                     }}
                 />

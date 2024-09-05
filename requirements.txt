@@ -1,0 +1,7 @@
+Flask
+flask-cors
+awsgi
+numpy
+matplotlib
+seaborn
+scipy

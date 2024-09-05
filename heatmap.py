@@ -7,6 +7,7 @@ from flask import Flask, request, send_file
 from io import BytesIO
 import zipfile
 from flask_cors import CORS
+import awsgi
 
 matplotlib.use('Agg')  # Use 'Agg' backend for non-GUI rendering
 app = Flask(__name__)
@@ -28,43 +29,33 @@ def generate_heatmap():
     T = np.array(data['expiry_time'])
     r = np.array(data['interest_rate'])
 
-
-
-    # Define the Black-Scholes formula for a call option
     def black_scholes_call(S, K, T, r, sigma):
         d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
         d2 = d1 - sigma * np.sqrt(T)
         call_price = S * norm.cdf(d1) - K * np.exp(-r * T) * norm.cdf(d2)
         return call_price
 
-    # Define the Black-Scholes formula for a put option
     def black_scholes_put(S, K, T, r, sigma):
         d1 = (np.log(S / K) + (r + 0.5 * sigma ** 2) * T) / (sigma * np.sqrt(T))
         d2 = d1 - sigma * np.sqrt(T)
         put_price = K * np.exp(-r * T) * norm.cdf(-d2) - S * norm.cdf(-d1)
         return put_price
 
-    # Generate a range of spot prices and a broader range of volatility
-    spot_prices = np.linspace(minS, maxS, 10)  # Coarser grid with 20 points
-    volatility = np.linspace(minV, maxV, 10)  # Broader grid with 20 points, from 5% to 100% volatility
+    spot_prices = np.linspace(minS, maxS, 10) 
+    volatility = np.linspace(minV, maxV, 10)  
 
-    # Create a meshgrid
     S, sigma = np.meshgrid(spot_prices, volatility)
 
-    # Calculate option prices using Black-Scholes
     call_prices = black_scholes_call(S, K, T, r, sigma)
     put_prices = black_scholes_put(S, K, T, r, sigma)
 
-    # Calculate PNL based on the purchase price
     call_pnl = np.maximum(call_prices - purchase_price, -purchase_price)
     put_pnl = np.maximum(put_prices - purchase_price, -purchase_price)
     def custom_normalize(pnl, purchase_price):
-        # Linear mapping from [-purchase_price, 0] to [0, 0.5]
         normalized_loss = np.clip((pnl + purchase_price) / (2 * purchase_price), 0, 0.5)
         k = 1000
         normalized_profit = np.clip((np.log1p(k * pnl / purchase_price) / np.log1p(k * 10)), 0.5, 1)
 
-        # Combine loss and profit normalization
         return np.where(pnl < 0, normalized_loss, normalized_profit)
 
     call_pnl_normalized = custom_normalize(call_pnl, purchase_price)
@@ -122,5 +113,5 @@ def generate_heatmap():
     return send_file(zip_buf, mimetype='application/zip', as_attachment=True, download_name='heatmaps.zip')
 
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000)
+def lambda_handler(event, context):
+    return awsgi.response(app, event, context, base64_content_types={"image/png"})
