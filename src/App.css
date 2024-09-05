@@ -47,8 +47,6 @@ h1, h2, h3, h4 {
 
 .wrapper {
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
   min-height: 100vh;
 }
 
@@ -143,8 +141,7 @@ input {
   background-color: var(--clr-red);
 }
 
-.heatmaps{
-  position: relative;
+.heatmaps {
   display: flex;
   width: 100%;
   align-items: center;
@@ -153,9 +150,19 @@ input {
   margin-left:2.5%
 }
 
+.loading {
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  padding: 25%;
+  margin-right:12.5%
+}
+
 .heatmaps .call-heatmap, .put-heatmap{
   display: flex;
   flex-direction: column;
+  width: 100%;
   flex-grow: 1;
   display: flex;
   justify-content: center;
