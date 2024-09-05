@@ -14,3 +14,5 @@ This project implements the Black-Scholes pricing model for financial options, p
 - **React Hook Form**: Manages forms and validation in the application.
 - **Framer Motion**: Provides smooth animations and transitions in the user interface.
 - **Lodash**: Utilities for function debouncing and performance optimization.
+
+https://cadaniel02.github.io/black-scholes-pricing-model/
