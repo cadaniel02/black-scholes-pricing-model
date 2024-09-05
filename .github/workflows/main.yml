@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]  # Adjust if your default branch is "master"
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install dependencies using Yarn
+      - name: Install dependencies
+        run: |
+          cd public
+          yarn install  # Install all dependencies, including react-scripts
+
+      # Build the project after installing dependencies
+      - name: Build project
+        run: |
+          cd public
+          yarn build  # This runs yarn build after dependencies are installed
