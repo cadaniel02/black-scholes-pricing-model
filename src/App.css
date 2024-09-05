@@ -9,10 +9,8 @@
 }
 
 :root {
-  --clr-white: #FFFFFF;
   --clr-darkslate: #1E201E;
   --clr-dimgray: #3C3D37;
-  --clr-olive: #697565;
   --clr-beige-200: #ECDFCC;
   --clr-beige-50: #EAE4DD;
 
@@ -49,17 +47,18 @@ h1, h2, h3, h4 {
 
 .wrapper {
   display: flex;
-  flex-basis: auto;
+  flex-wrap: wrap;
+  flex-direction: row;
+  min-height: 100vh;
 }
 
 .input-wrapper {
-  background-color:var(--clr-dimgray);
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  background-color: var(--clr-dimgray);
   min-width: 10rem;
   max-width: 17.5rem;
   padding: 2rem 1rem;
+  flex-shrink: 0; 
+  max-height: 100%;
 }
 
 .asset-stat-form, .heatmap-form {
@@ -110,6 +109,7 @@ input {
 }
 
 .info-wrapper {
+  flex: 1;
   width:100%;
   margin: 4rem;
 }

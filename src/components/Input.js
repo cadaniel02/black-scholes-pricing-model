@@ -4,13 +4,13 @@ import { MdError } from "react-icons/md"
 import { findInputError, isFormInvalid } from "../utils/errorUtils"
 import { useEffect } from "react"
 
-export const Input = ({label, type, id, validation}) => {
+export const Input = ({label, type, id, name, validation}) => {
     const {
         register,
         formState: { errors },
     } = useFormContext()
 
-    const inputError = findInputError(errors, id)
+    const inputError = findInputError(errors, name)
     const isRequiredError = inputError?.error?.type === "required";
     const isInvalid = isFormInvalid(inputError)
 
@@ -19,9 +19,10 @@ export const Input = ({label, type, id, validation}) => {
             <label htmlFor={id}>{label}</label>
             <input
                 id={id}
+                name={name}
                 type={type}
                 step="any"
-                {...register(id, validation)}
+                {...register(name, validation)}
             />
             <AnimatePresence mode="wait" initial={false}>
                 {!isRequiredError && isInvalid && (

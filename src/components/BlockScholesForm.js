@@ -7,26 +7,36 @@ import { getFieldsAsDict } from '../utils/keyUtils'
 
 export const BlackScholesForm = ({ onChange }) => {
 
-    const { handleSubmit, watch, formState: { isValid } } = useFormContext();
+    const { watch, trigger, getValues } = useFormContext();
 
-    const onSubmit = handleSubmit(data => {
-        const { call, put } = blackscholes(data.asset_price, data.strike_price, data.expiry_time, data.interest_rate, data.volatility);
-        onChange({ call, put });
-    });
+    const onSubmitSubform = async () => {
+        const isValid = await trigger(['asset_price', 'strike_price', 'expiry_time', 'interest_rate', 'volatility']);
+    
+        if (isValid) {
+            const [ asset_price, strike_price, expiry_time, interest_rate, volatility ] = getValues([
+                'asset_price',
+                'strike_price',
+                'expiry_time',
+                'interest_rate',
+                'volatility'
+            ]);
+            
+            const { call, put } = blackscholes(asset_price, strike_price, expiry_time, interest_rate, volatility);
+            onChange({ call, put });
+        }
+    };
 
-    const debouncedSubmit = useRef(debounce(onSubmit, 1000)).current;
+    const debouncedSubmit = useRef(debounce(onSubmitSubform, 1000)).current;
 
     useEffect(() => {
         const subscription = watch((value, { name, type }) => {
-            console.log('Field changed:', name, 'Event type:', type, 'Current form values:', value);
-            console.log('Form validity:', isValid);
-            if (isValid) {
-                debouncedSubmit(value);
+            if (['asset_price', 'strike_price', 'expiry_time', 'interest_rate', 'volatility'].some(field => field === name)) {
+                debouncedSubmit();
             }
         });
 
         return () => subscription.unsubscribe();
-    }, [watch, isValid, debouncedSubmit]);
+    }, [watch, debouncedSubmit]);
 
 
     return (
@@ -34,6 +44,7 @@ export const BlackScholesForm = ({ onChange }) => {
             <Input
                 label="Current Asset Price"
                 id="asset_price"
+                name="asset_price"
                 type="number"
                 validation={{
                     required: {
@@ -49,6 +60,7 @@ export const BlackScholesForm = ({ onChange }) => {
             <Input
                 label="Strike Price"
                 id="strike_price"
+                name="strike_price"
                 type="number"
                 validation={{
                     required: {
@@ -64,6 +76,7 @@ export const BlackScholesForm = ({ onChange }) => {
             <Input
                 label="Time to Maturity"
                 id="expiry_time"
+                name="expiry_time"
                 type="number"
                 validation={{
                     required: {
@@ -79,6 +92,7 @@ export const BlackScholesForm = ({ onChange }) => {
             <Input
                 label="Volatility"
                 id="volatility"
+                name="volatility"
                 type="number"
                 validation={{
                     required: {
@@ -98,6 +112,7 @@ export const BlackScholesForm = ({ onChange }) => {
             <Input
                 label="Risk-Free Interest Rate"
                 id="interest_rate"
+                name="interest_rate"
                 type="number"
                 validation={{
                     required: {
